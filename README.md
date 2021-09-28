@@ -1,6 +1,6 @@
 # Phonebook
 
-A Fullstack application to manage a phonebook catalogue using Anglar 12.2.5 and .Net 5
+A Fullstack application to manage a phonebook catalogue using Angular 12.2.5 and .Net 5
 
 ![OS](https://img.shields.io/badge/OS-cross_platform-lightgrey)
 
