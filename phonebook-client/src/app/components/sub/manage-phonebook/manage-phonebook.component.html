@@ -1,0 +1,119 @@
+<h2 class="align-center">{{ title }}</h2>
+
+<form #manageForm="ngForm" novalidate>
+  <div>
+    <mat-form-field class="cst-filed" appearance="fill" class="mr-20p">
+      <mat-label>Ονομα</mat-label>
+      <input
+        matInput
+        type="text"
+        name="Name"
+        #Name="ngModel"
+        maxlength="20"
+        [(ngModel)]="name"
+        required
+      />
+      <mat-error *ngIf="manageForm?.form?.controls?.Name?.errors?.required">
+        Μέχρι 20 χαρακτήρες
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field class="cst-filed" appearance="fill">
+      <mat-label>Επώνυμο</mat-label>
+      <input
+        matInput
+        type="text"
+        name="Surname"
+        #Surname="ngModel"
+        maxlength="20"
+        [(ngModel)]="surname"
+        required
+      />
+      <mat-error *ngIf="manageForm?.form?.controls?.Surname?.errors?.required">
+        Μέχρι 20 χαρακτήρες
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div>
+    <mat-form-field class="cst-filed" appearance="fill" class="mr-20p">
+      <mat-label>Σταθερό Τηλ.</mat-label>
+      <input
+        matInput
+        type="text"
+        name="HomePhoneNumber"
+        #HomePhoneNumber="ngModel"
+        [(ngModel)]="homePhoneNumber"
+        maxlength="10"
+        minlength="10"
+        pattern="[0-9]+"
+        required
+      />
+      <mat-error *ngIf="manageForm?.form?.controls?.HomePhoneNumber?.invalid">
+        Μόνο 10 ψήφιοι αριθμοί
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field class="cst-filed" appearance="fill">
+      <mat-label>Κινητό Τηλ.</mat-label>
+      <input
+        matInput
+        type="text"
+        name="CellPhoneNumber"
+        #CellPhoneNumber="ngModel"
+        [(ngModel)]="cellPhoneNumber"
+        maxlength="10"
+        minlength="10"
+        pattern="[0-9]+"
+        required
+      />
+      <mat-error *ngIf="manageForm?.form?.controls?.CellPhoneNumber?.invalid">
+        Μόνο 10 ψήφιοι αριθμοί
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div>
+    <mat-form-field class="cst-filed" appearance="fill" class="width-100per">
+      <mat-label>Email</mat-label>
+      <input
+        matInput
+        type="email"
+        name="Email"
+        #Email="ngModel"
+        [(ngModel)]="email"
+        email
+        required
+      />
+      <mat-error *ngIf="manageForm?.form?.controls?.Email?.errors?.email">
+        Μη έγκυρο email
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div>
+    <mat-form-field appearance="fill" class="width-100per">
+      <mat-label>Περιοχή</mat-label>
+      <mat-select
+        name="DistrictId"
+        #DistrictId="ngModel"
+        [(ngModel)]="districtId"
+        required
+      >
+        <mat-option *ngFor="let district of districts" [value]="district.id">
+          {{ district.name }} [T.K: {{ district.postCode }}]
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</form>
+
+<div>
+  <button mat-button color="warn" [mat-dialog-close]="true">Ακύρωση</button>
+  <button
+    mat-button
+    style="float: right"
+    [disabled]="!manageForm.valid || !manageForm.dirty"
+    (click)="manage(manageForm.form)"
+  >
+    Αποθήκευση
+  </button>
+</div>

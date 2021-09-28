@@ -1,0 +1,177 @@
+<div *ngIf="loader.isLoading | async" class="div-progress">
+  <mat-progress-bar
+    class="mat-prog"
+    color="primary"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>
+
+<div class="container">
+  <mat-card class="mat-card-header">
+    <h2>Τηλεφωνικός κατάλογος</h2>
+  </mat-card>
+
+  <div class="btn-holder">
+    <span>
+      <button mat-raised-button color="basic" (click)="addFilter()">
+        Προσθήκη Φίλτρου
+      </button>
+      <button
+        mat-button
+        class="ml-10p"
+        *ngIf="filters.filterProperties.length > 0"
+        (click)="showHideFilters()"
+      >
+        {{ showHideLabel }}
+      </button>
+
+      <button
+        mat-button
+        class="ml-10p"
+        color="warn"
+        *ngIf="filters.filterProperties.length > 0"
+        (click)="deleteAllFilters()"
+      >
+        Διαγραφή όλων
+      </button>
+    </span>
+
+    <button mat-raised-button color="add" (click)="openManageWindow('add')">
+      Προσθήκη εγγραφής
+    </button>
+  </div>
+
+  <div>
+    <div class="filters-div" *ngIf="isFiltersVisible">
+      <mat-card
+        class="mat-card-filter"
+        *ngFor="let filter of filters.filterProperties; let i = index"
+      >
+        <select
+          [(ngModel)]="filters.filterProperties[i].propertyName"
+          class="filter-select"
+        >
+          <option value="name">Όνομα</option>
+          <option value="surname">Επώνυμο</option>
+          <option value="homePhoneNumber">Σταθερό Τηλ.</option>
+          <option value="cellPhoneNumber">Κινητό Τηλ.</option>
+          <option value="district.postcode">Τ.Κ.</option>
+          <option value="district.name">Περιοχή</option>
+        </select>
+        <br />
+        <input
+          [(ngModel)]="filters.filterProperties[i].propertyValue"
+          class="filter-input"
+          type="text"
+          placeholder="Εισαγωγή τιμής"
+        />
+        <button class="btn-remove" (click)="deleteFilter(i)">X</button>
+      </mat-card>
+    </div>
+  </div>
+
+  <div style="float: right">
+    <mat-form-field class="mr-20p">
+      <mat-label>Τύπος Ταξινόμησεις</mat-label>
+      <mat-select [(ngModel)]="orderBy">
+        <mat-option value="">----</mat-option>
+        <mat-option value="name">Όνομα</mat-option>
+        <mat-option value="surname">Επώνυμο</mat-option>
+        <mat-option value="homePhoneNumber">Σταθερό Τηλ.</mat-option>
+        <mat-option value="cellPhoneNumber">Κινητό Τηλ.</mat-option>
+        <mat-option value="district.postcode">Τ.Κ.</mat-option>
+        <mat-option value="district.name">Περιοχή</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Τύπος Ταξινόμησεις</mat-label>
+      <mat-select [(ngModel)]="orderbyDirection">
+        <mat-option value="">----</mat-option>
+        <mat-option value="0">Αύξουσα</mat-option>
+        <mat-option value="1">Φθίνουσα</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div *ngIf="hasData; else hasNotData">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Όνομα</th>
+        <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="surname">
+        <th mat-header-cell *matHeaderCellDef>Επώνυμο</th>
+        <td mat-cell *matCellDef="let element">{{ element.surname }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="homePhoneNumber">
+        <th mat-header-cell *matHeaderCellDef>Σταθερό Τηλ.</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.homePhoneNumber }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="cellPhoneNumber">
+        <th mat-header-cell *matHeaderCellDef>Κινητό Τηλ.</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.cellPhoneNumber }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="postCode">
+        <th mat-header-cell *matHeaderCellDef>Τ.Κ.</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.district.postCode }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="district">
+        <th mat-header-cell *matHeaderCellDef>Περιοχή</th>
+        <td mat-cell *matCellDef="let element">{{ element.district.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="options">
+        <th mat-header-cell *matHeaderCellDef>Επιλογές</th>
+        <td mat-cell *matCellDef="let element">
+          <select
+            #manageSelect
+            (change)="managePhonebook(manageSelect.value, element)"
+          >
+            <option>----</option>
+            <option value="edit">Επεξεργασία</option>
+            <option value="delete">Διαγραφή</option>
+          </select>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 20]"
+      [length]="length"
+      [pageIndex]="pageIndex"
+      [pageSize]="pageSize"
+      showFirstLastButtons
+      (page)="getPhonebooks($event)"
+      class="mat-elevation-z8"
+    >
+    </mat-paginator>
+  </div>
+
+  <ng-template #hasNotData>
+    <div class="no-data">Δεν βρέθηκαν στοιχεία</div>
+  </ng-template>
+
+  <button
+    style="float: right"
+    mat-raised-button
+    color="primary"
+    (click)="searchWithFilters()"
+  >
+    Αναζήτηση
+  </button>
+</div>
